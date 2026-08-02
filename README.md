@@ -56,6 +56,71 @@ Abre `http://localhost:5173`, regístrate, entra al dashboard y cierra sesión.
 
 > El endpoint `GET /api/v1/users/active` se implementa en vivo en la Sesión 3.
 
+## Arquitectura
+
+### Diagrama de contexto (C4)
+
+Construido con [C4-PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML).
+
+```plantuml
+@startuml C4_Context_FlowSync
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de contexto - full-stack-adonisjs-master
+
+Person(usuario, "Usuario", "Se registra, inicia sesión y consulta su perfil o la lista de usuarios.")
+
+System(frontend, "Frontend", "React 19 + Vite + React Router", "SPA servida en localhost:5173. Guarda el access token y lo envía en cada petición.")
+
+System(backend, "Backend", "AdonisJS 7 (Node.js)", "API JSON en /api/v1. Valida input con VineJS y autentica con @adonisjs/auth (access tokens). Expone documentación OpenAPI/Scalar en /api.")
+
+SystemDb(db, "Base de datos", "SQLite (better-sqlite3)", "Archivo tmp/db.sqlite3. Persiste las tablas users y auth_access_tokens vía Lucid ORM.")
+
+Rel(usuario, frontend, "Usa", "HTTPS (navegador)")
+Rel(frontend, backend, "Consume la API REST", "HTTPS/JSON, Bearer token en Authorization")
+Rel(backend, db, "Lee y escribe", "SQL vía Lucid ORM (better-sqlite3, embebido)")
+
+@enduml
+```
+
+### Flujo de login (secuencia)
+
+Verificado en [mermaid.live](https://mermaid.live/).
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant FE as Frontend (React)
+    participant API as AccessTokensController
+    participant AF as AuthFinder (verifyCredentials)
+    participant DB as SQLite (users)
+    participant AT as DbAccessTokensProvider
+
+    U->>FE: Ingresa email y password
+    FE->>API: POST /api/v1/account/login {email, password}
+    API->>API: request.validateUsing(loginValidator)
+    API->>AF: User.verifyCredentials(email, password)
+    AF->>DB: SELECT * FROM users WHERE email = ?
+    DB-->>AF: fila de usuario (password hasheado)
+    AF->>AF: hash.verify(password, user.password)
+    alt credenciales inválidas
+        AF-->>API: throw InvalidCredentialsException
+        API-->>FE: 400 Bad Request
+        FE-->>U: Muestra error de login
+    else credenciales válidas
+        AF-->>API: instancia de User
+        API->>DB: UPDATE users SET last_seen_at = now()
+        API->>AT: User.accessTokens.create(user)
+        AT->>DB: INSERT INTO auth_access_tokens
+        DB-->>AT: token persistido
+        AT-->>API: AccessToken (con .value)
+        API-->>FE: 200 OK {user, token}
+        FE-->>U: Redirige al dashboard
+    end
+```
+
 ## Workflow con OpenSpec
 
 Flujo spec-driven con Claude Code o Cursor:
