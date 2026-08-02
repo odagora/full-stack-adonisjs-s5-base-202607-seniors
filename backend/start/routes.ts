@@ -1,7 +1,6 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-import AutoSwagger from 'adonis-autoswagger'
-import swagger from '#config/swagger'
+import openapi from '@foadonis/openapi/services/main'
 
 const NewAccountsController = () => import('#controllers/new_accounts_controller')
 const AccessTokensController = () => import('#controllers/access_tokens_controller')
@@ -15,17 +14,10 @@ router.get('/', async () => {
 
 /*
 |--------------------------------------------------------------------------
-| API Docs (Swagger)
+| API Docs (OpenAPI / Scalar)
 |--------------------------------------------------------------------------
 */
-router.get('/swagger', async () => {
-  return AutoSwagger.default.docs(router.toJSON(), swagger)
-})
-
-router.get('/docs', async () => {
-  return AutoSwagger.default.ui('/swagger', swagger)
-  // return AutoSwagger.default.scalar('/swagger')
-})
+openapi.registerRoutes()
 
 /*
 |--------------------------------------------------------------------------
