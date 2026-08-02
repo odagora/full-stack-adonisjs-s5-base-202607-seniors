@@ -26,3 +26,6 @@ tmp
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Artefactos locales del skill playwright-cli (snapshots, screenshots)
+.playwright-cli
