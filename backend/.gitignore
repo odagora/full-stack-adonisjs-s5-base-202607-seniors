@@ -5,6 +5,10 @@ node_modules
 build
 dist
 
+# Artefactos generados por AdonisJS (typed routes, etc.)
+.adonisjs
+database/schema.ts
+
 # Entorno (NUNCA commitear .env)
 .env
 .env.local
