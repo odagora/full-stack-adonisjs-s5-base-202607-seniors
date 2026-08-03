@@ -40,6 +40,7 @@ router
         router.get('/account/profile', [ProfilesController, 'show'])
 
         router.get('/users', [UsersController, 'index'])
+        router.get('/users/active', [UsersController, 'active'])
         router.get('/users/:id', [UsersController, 'show'])
       })
       .use(middleware.auth())
