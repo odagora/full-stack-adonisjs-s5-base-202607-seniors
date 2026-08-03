@@ -1,0 +1,58 @@
+{
+  // Config for the `markdownlint` job in .github/workflows/docs-quality.yml.
+  // Every relaxed rule below is a deliberate decision, not an oversight —
+  // see docs/WORKFLOWS-CI-NOTES.md ("Job: markdownlint") for the full
+  // reasoning and what was verified. Same convention as the inline
+  // `--exclude`/`--exclude-path` comments in the lychee jobs in that file.
+  "config": {
+    "default": true,
+
+    // MD013 (line-length): this repo doesn't hard-wrap prose. ADRs, the
+    // PRD, and WORKFLOWS-CI-NOTES.md routinely have single lines well past
+    // any reasonable limit (some 300-500 chars: long inline explanations,
+    // URLs, MADR "Pros and Cons" bullets). Raising the limit wouldn't help
+    // — the outliers are an order of magnitude over 80. Hard-wrapping would
+    // hurt readability/diffability more than it helps, so disabled outright
+    // rather than tuned.
+    "MD013": false,
+
+    // MD024 (no-duplicate-heading): WORKFLOWS-CI-NOTES.md legitimately
+    // repeats an "### Known weaknesses" subheading under two different,
+    // unrelated parent sections (one per workflow). Restricting the check
+    // to sibling headings (same parent) keeps it useful for catching real
+    // accidental duplicates within one section, without flagging this
+    // intentional repeated substructure.
+    "MD024": { "siblings_only": true },
+
+    // MD060 (table-column-style): every pipe-table in this repo (README.md,
+    // CLAUDE.md, WORKFLOWS-CI-NOTES.md) uses a compact separator row
+    // (`|---|---|`) with a padded/spaced header and data rows — a style
+    // mismatch by MD060's definition, but consistent and pre-existing
+    // across the whole repo. Decision: keep disabled permanently —
+    // reformatting every existing table would be a repo-wide cosmetic
+    // change with no real benefit, since the current style is already
+    // consistent everywhere it's used.
+    "MD060": false
+  },
+
+  // Not covered by the workflow's `globs:` input, but if this config is
+  // ever pointed at `docs/**/*.md` directly, keep these out:
+  "ignores": [
+    // Defensive, mirrors the same gotcha already hit by the lychee jobs
+    // (see WORKFLOWS-CI-NOTES.md): docs/site/ is its own npm package and
+    // may have a local node_modules/ during manual/local runs.
+    "**/node_modules/**",
+    // The Astro/Starlight subtree: its own AGENTS.md/CLAUDE.md/README.md
+    // aren't authored documentation content for this check, and
+    // docs/site/src/content/docs/adr/** is the sync-adrs.sh-generated
+    // *copy* of docs/adr, backend/docs/adr and frontend/docs/adr — those
+    // real sources are already linted directly; linting the generated copy
+    // too would just double-report the same findings.
+    "docs/site/**",
+    // Log4brains scaffold files, not ours to maintain (same exclusion
+    // sync-adrs.sh and the lychee jobs already apply, for the same reason).
+    "docs/adr/index.md",
+    "docs/adr/README.md",
+    "docs/adr/template.md"
+  ]
+}

@@ -3,7 +3,7 @@
 Starter kit full-stack con autenticación por **access tokens**. Repo hilo conductor
 del máster **AI4Devs** (LIDR). Monorepo con backend y frontend independientes.
 
-```
+```text
 full-stack-adonisjs-master/
 ├── backend/      AdonisJS 7 + Lucid + SQLite + VineJS + @adonisjs/auth
 ├── frontend/     React 19 + Vite + React Router + Tailwind v4 + shadcn/ui
@@ -125,7 +125,7 @@ sequenceDiagram
 
 Flujo spec-driven con Claude Code o Cursor:
 
-```
+```text
 /opsx:propose "añadir endpoint X"   # genera proposal + specs + tasks
 /opsx:apply                          # implementa según las tasks
 /opsx:archive                        # archiva el cambio aplicado
@@ -133,4 +133,3 @@ Flujo spec-driven con Claude Code o Cursor:
 
 La configuración vive en `openspec/config.yaml`. Los comandos y skills se
 instalaron en `.claude/` y `.cursor/`.
-

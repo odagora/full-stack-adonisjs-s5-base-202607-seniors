@@ -15,6 +15,7 @@ FlowSync es una aplicación web de gestión de tareas personales que **mantiene 
 El MVP busca validar una hipótesis central: **¿la gente con sobrecarga de herramientas adoptará un gestor de tareas si elimina la doble gestión tarea/calendario?**
 
 ### Qué incluye el MVP
+
 - Registro y autenticación de usuarios.
 - CRUD completo de tareas con estados.
 - Filtrado y organización básica de tareas.
@@ -22,6 +23,7 @@ El MVP busca validar una hipótesis central: **¿la gente con sobrecarga de herr
 - Sincronización con Google Calendar (lectura y escritura).
 
 ### Qué NO incluye el MVP (out of scope explícito)
+
 - Equipos o tareas compartidas (FlowSync MVP es estrictamente individual).
 - Sincronización con calendarios que no sean Google (Outlook, iCal: post-MVP).
 - Notificaciones push o por email.
