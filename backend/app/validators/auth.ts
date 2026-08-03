@@ -26,7 +26,5 @@ export const loginValidator = vine.compile(
   vine.object({
     email: vine.string().trim().email().normalizeEmail(),
     password: vine.string(),
-    // TEST: openapi-freshness debe fallar por este campo hasta correr generate-openapi.sh
-    rememberMe: vine.boolean().optional(),
   })
 )
