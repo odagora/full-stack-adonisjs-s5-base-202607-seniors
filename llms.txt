@@ -1,0 +1,21 @@
+# FlowSync
+
+> Full-stack starter kit with access-token authentication, built with AdonisJS 7 (backend) and React 19 (frontend). FlowSync is the reference repository for the AI4Devs master's program (LIDR): a personal task manager that keeps tasks in sync with Google Calendar. This monorepo is the teaching codebase used to demonstrate the full engineering workflow (backend API, frontend SPA, ADRs, OpenAPI docs, CI).
+
+## Tech stack
+
+- Backend: AdonisJS 7 (TypeScript), Lucid ORM, SQLite via `better-sqlite3`, input validation with VineJS, authentication via `@adonisjs/auth` using the `api` guard (bearer access tokens).
+- Frontend: React 19 + TypeScript, built with Vite, routing via React Router, styled with Tailwind CSS v4 and shadcn/ui components.
+- API surface: JSON REST API under `/api/v1`, with OpenAPI/Scalar documentation exposed at `/api`.
+- Spec-driven development workflow via OpenSpec (`openspec/`).
+
+## Documentation
+
+- [GitHub repository](https://github.com/odagora/full-stack-adonisjs-s5-base-202607-seniors): source code, issues, and pull requests for the project.
+- [Published documentation site](https://odagora.github.io/full-stack-adonisjs-s5-base-202607-seniors/): Starlight site with architecture decision records (ADRs) and generated API reference.
+- [README](https://github.com/odagora/full-stack-adonisjs-s5-base-202607-seniors/blob/main/README.md): setup instructions, endpoint list, and architecture diagrams.
+- [PRD](https://github.com/odagora/full-stack-adonisjs-s5-base-202607-seniors/blob/main/docs/PRD.md): product requirements for the FlowSync MVP.
+
+## Backend conventions
+
+Business logic lives in controllers, never in `start/routes.ts` (routes only wire paths to controllers). Input validation always goes through a VineJS validator defined in `app/validators/`. Output serialization always goes through `UserTransformer` (`app/transformers/`) rather than returning raw Lucid models — the password field is excluded there, and the output contract lives in a single place. Routes are namespaced under the `/api/v1` prefix, and protected routes use the `middleware.auth()` guard. Internal imports use subpath imports (e.g. `#controllers/*`, `#models/*`) rather than relative paths.
