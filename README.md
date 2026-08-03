@@ -134,3 +134,6 @@ Flujo spec-driven con Claude Code o Cursor:
 La configuración vive en `openspec/config.yaml`. Los comandos y skills se
 instalaron en `.claude/` y `.cursor/`.
 
+<!-- TEST: check-links-source debe fallar por este link -->
+[link de prueba roto](https://este-dominio-no-existe-zzz12345.invalid)
+
