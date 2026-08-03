@@ -139,9 +139,16 @@ jobs:
       - name: Check external links in source Markdown
         uses: lycheeverse/lychee-action@v2
         with:
+          # --root-dir es necesario para que --scheme funcione con links
+          # locales (relativos o root-relative): sin él, lychee no puede
+          # convertirlos a una URL file:// y tira un error duro en vez de
+          # excluirlos por esquema. Con --root-dir, si pasan a file://,
+          # --scheme https/http los descarta como corresponde (no son
+          # responsabilidad de este job, ver check-links-built).
           args: >-
             --no-progress
             --scheme https --scheme http
+            --root-dir .
             --exclude-loopback
             --exclude 'localhost'
             --exclude 'example\.com'
