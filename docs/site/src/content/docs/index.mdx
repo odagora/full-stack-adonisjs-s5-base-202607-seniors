@@ -1,40 +1,28 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
-hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
-  actions:
-    - text: Example Guide
-      link: /guides/example/
-      icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
-      variant: minimal
+title: FlowSync Docs
+description: Documentación de FlowSync — decisiones de arquitectura y referencia de la API.
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+FlowSync es la aplicación del máster **AI4Devs** (LIDR): un starter kit
+full-stack en AdonisJS 7 + React con autenticación por access tokens.
+
+Esta documentación reúne las decisiones de arquitectura del proyecto y la
+referencia de la API HTTP.
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Decisiones (ADRs)" icon="document">
+		Registro de decisiones arquitectónicas (formato MADR, gestionadas con
+		[log4brains](https://github.com/thomvaill/log4brains)): por qué SQLite en
+		vez de PostgreSQL, VineJS en vez de Zod, y más.
+
+		[Ver ADRs →](/flowsync/adr/20260802-use-log4brains-to-manage-the-adrs/)
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
-	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
-	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="FlowSync API" icon="rocket">
+		Referencia completa de los endpoints del backend (`/api/v1/*`), generada
+		a partir de un snapshot OpenAPI real (ver `scripts/generate-openapi.sh`).
+
+		[Ver referencia de la API →](/flowsync/api/)
 	</Card>
 </CardGrid>
