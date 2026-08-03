@@ -9,36 +9,36 @@ title: "Use Markdown Architectural Decision Records"
 
 ## Context and Problem Statement
 
-We want to record architectural decisions made in this project.
-Which format and structure should these records follow?
+Queremos registrar las decisiones de arquitectura tomadas en este proyecto.
+¿Qué formato y estructura deberían seguir estos registros?
 
 ## Considered Options
 
-- [MADR](https://adr.github.io/madr/) 2.1.2 with Log4brains patch
-- [MADR](https://adr.github.io/madr/) 2.1.2 – The original Markdown Architectural Decision Records
-- [Michael Nygard's template](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions) – The first incarnation of the term "ADR"
-- [Sustainable Architectural Decisions](https://www.infoq.com/articles/sustainable-architectural-design-decisions) – The Y-Statements
-- Other templates listed at <https://github.com/joelparkerhenderson/architecture_decision_record>
-- Formless – No conventions for file format and structure
+- [MADR](https://adr.github.io/madr/) 2.1.2 con el patch de Log4brains
+- [MADR](https://adr.github.io/madr/) 2.1.2 – El Markdown Architectural Decision Records original
+- [Michael Nygard's template](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions) – La primera encarnación del término "ADR"
+- [Sustainable Architectural Decisions](https://www.infoq.com/articles/sustainable-architectural-design-decisions) – Los Y-Statements
+- Otras plantillas listadas en <https://github.com/joelparkerhenderson/architecture_decision_record>
+- Sin forma – Sin convenciones para el formato ni la estructura del archivo
 
 ## Decision Outcome
 
-Chosen option: "MADR 2.1.2 with Log4brains patch", because
+Chosen option: "MADR 2.1.2 with Log4brains patch", porque
 
-- Implicit assumptions should be made explicit.
-  Design documentation is important to enable people understanding the decisions later on.
-  See also [A rational design process: How and why to fake it](https://doi.org/10.1109/TSE.1986.6312940).
-- The MADR format is lean and fits our development style.
-- The MADR structure is comprehensible and facilitates usage & maintenance.
-- The MADR project is vivid.
-- Version 2.1.2 is the latest one available when starting to document ADRs.
-- The Log4brains patch adds more features, like tags.
+- Las suposiciones implícitas deberían hacerse explícitas.
+  La documentación de diseño es importante para que otras personas puedan entender las decisiones más adelante.
+  Ver también [A rational design process: How and why to fake it](https://doi.org/10.1109/TSE.1986.6312940).
+- El formato MADR es liviano y encaja con nuestro estilo de desarrollo.
+- La estructura de MADR es comprensible y facilita su uso y mantenimiento.
+- El proyecto MADR está vivo (mantenimiento activo).
+- La versión 2.1.2 era la más reciente disponible al momento de empezar a documentar ADRs.
+- El patch de Log4brains agrega más funcionalidades, como los tags.
 
-The "Log4brains patch" performs the following modifications to the original template:
+El "patch de Log4brains" realiza las siguientes modificaciones a la plantilla original:
 
-- Change the ADR filenames format (`NNN-adr-name` becomes `YYYYMMDD-adr-name`), to avoid conflicts during Git merges.
-- Add a `draft` status, to enable collaborative writing.
-- Add a `Tags` field.
+- Cambia el formato del nombre de archivo de los ADR (`NNN-adr-name` pasa a `YYYYMMDD-adr-name`), para evitar conflictos durante los merges de Git.
+- Agrega un estado `draft`, para habilitar la escritura colaborativa.
+- Agrega un campo `Tags`.
 
 ## Links
 
