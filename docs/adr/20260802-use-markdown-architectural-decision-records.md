@@ -39,4 +39,4 @@ The "Log4brains patch" performs the following modifications to the original temp
 
 ## Links
 
-- Relates to [Use Log4brains to manage the ADRs](20260802-use-log4brains-to-manage-the-adrs.md)
+- Relates to [Use Log4brains to manage the ADRs](../20260802-use-log4brains-to-manage-the-adrs/)

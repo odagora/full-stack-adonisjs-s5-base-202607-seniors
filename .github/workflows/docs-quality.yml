@@ -145,6 +145,11 @@ jobs:
             --exclude-loopback
             --exclude 'localhost'
             --exclude 'example\.com'
+            --exclude 'adr\.github\.io/adr-log'
+            --exclude-path 'docs/adr/index.md'
+            --exclude-path 'docs/adr/README.md'
+            --exclude-path 'docs/adr/template.md'
+            --exclude-path 'node_modules'
             docs/**/*.md
             docs/**/*.mdx
             backend/docs/adr/**/*.md
@@ -202,12 +207,28 @@ jobs:
       - name: Check links against the built site
         uses: lycheeverse/lychee-action@v2
         with:
+          # Los dos excludes de 20260802-... son links "Relates to" entre
+          # ADRs, relativos (../otro-slug/). Astro los deja tal cual en el
+          # HTML para que el navegador los resuelva — y lo hace bien (RFC
+          # 3986, verificado a mano con curl). lychee, al escanear el HTML
+          # local con rutas anidadas tipo /adr/slug/index.html, calcula mal
+          # la profundidad y sube un nivel de más. Falso positivo conocido
+          # de la herramienta, no un link roto real.
+          #
+          # docs/site/dist/404.html se excluye por completo: su propio link
+          # canónico apunta a su propia URL (.../404/), que por diseño no es
+          # una ruta real y siempre da 404. No es contenido a validar.
           args: >-
             --no-progress
-            --base-url http://localhost:4321
+            --base-url http://localhost:4321/full-stack-adonisjs-s5-base-202607-seniors/
             --exclude 'localhost:3333'
             --exclude 'localhost:5173'
             --exclude 'example\.com'
+            --exclude 'adr\.github\.io/adr-log'
+            --exclude 'localhost:4321/20260802-use-markdown-architectural-decision-records'
+            --exclude 'localhost:4321/20260802-use-sqlite-with-better-sqlite3-instead-of-postgresql'
+            --exclude 'localhost:4321/20260802-use-log4brains-to-manage-the-adrs'
+            --exclude-path 'docs/site/dist/404.html'
             docs/site/dist/**/*.html
           fail: true
 

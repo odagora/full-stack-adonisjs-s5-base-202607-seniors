@@ -64,4 +64,4 @@ extra, lo que reduce al mínimo la fricción de onboarding del máster.
 
 ## Links
 
-- Relates to [Use Markdown Architectural Decision Records](../../../docs/adr/20260802-use-markdown-architectural-decision-records.md)
+- Relates to [Use Markdown Architectural Decision Records](../20260802-use-markdown-architectural-decision-records/)
