@@ -22,6 +22,7 @@ on:
       - 'backend/config/openapi.ts'
       - 'scripts/**'
       - '.github/workflows/docs-quality.yml'
+      - '.markdownlint-cli2.jsonc'
   schedule:
     # Chequeo semanal de links (lunes 06:00 UTC) para detectar link rot.
     - cron: '0 6 * * 1'
@@ -35,6 +36,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  markdownlint:
+    # Lint de formato de Markdown sobre el contenido real (ADRs + *.md de
+    # raíz). No aplica en el cron: no hay nada nuevo que evaluar sin un PR
+    # de por medio (mismo criterio que adr-sync/openapi-freshness).
+    #
+    # Reglas por defecto relajadas en .markdownlint-cli2.jsonc (con el
+    # razonamiento completo ahí y en WORKFLOWS-CI-NOTES.md): MD013
+    # (longitud de línea, no aplica a prosa sin hard-wrap), MD024
+    # (permite subtítulos repetidos bajo secciones distintas) y MD060
+    # (estilo de tablas con pipes, todavía sin decidir — ver nota en el
+    # archivo de config). Ninguna regla activa hoy es ruido: todo lo que
+    # queda habilitado se verificó contra el contenido real del repo.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: |
+            docs/**/*.md
+            backend/docs/adr/**/*.md
+            frontend/docs/adr/**/*.md
+            *.md
+
   adr-sync:
     # Re-corre sync-adrs.sh y falla si el resultado difiere de lo commiteado
     # (ADR nuevo/editado/borrado sin sincronizar a docs/site/).
@@ -162,6 +190,7 @@ jobs:
             backend/docs/adr/**/*.md
             frontend/docs/adr/**/*.md
             *.md
+            llms.txt
           fail: true
 
   check-links-built:

@@ -28,6 +28,7 @@ conductor del máster AI4Devs. Monorepo con dos apps independientes:
 ## Comandos
 
 ### Backend (`cd backend`)
+
 - `npm run dev` — servidor con HMR en `http://localhost:3333`
 - `npm run migration:run` — aplica migraciones
 - `npm run migration:fresh` — recrea la BD desde cero
@@ -35,6 +36,7 @@ conductor del máster AI4Devs. Monorepo con dos apps independientes:
 - `node ace list:routes` — inspecciona el árbol de rutas
 
 ### Frontend (`cd frontend`)
+
 - `npm run dev` — Vite dev server en `http://localhost:5173`
 - `npm run build` — build de producción
 

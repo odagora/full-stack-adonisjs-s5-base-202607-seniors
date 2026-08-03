@@ -30,6 +30,7 @@ divergencia spec↔código plantada a conciencia.
 
 > Nota: existen además "trampas" más sutiles heredadas del propio PRD v1.0
 > (`docs/PRD.md`), pensadas para el análisis de requisitos:
+>
 > - §1 lista *notificaciones push* como **out of scope** explícito.
 > - §3.3 deja el **criterio de ordenación** del listado sin definir (a decidir en
 >   refinamiento).

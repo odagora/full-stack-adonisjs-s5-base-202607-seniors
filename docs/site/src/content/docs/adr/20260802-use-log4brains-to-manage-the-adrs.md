@@ -9,17 +9,17 @@ title: "Use Log4brains to manage the ADRs"
 
 ## Context and Problem Statement
 
-We want to record architectural decisions made in this project.
-Which tool(s) should we use to manage these records?
+Queremos registrar las decisiones de arquitectura tomadas en este proyecto.
+¿Qué herramienta(s) deberíamos usar para gestionar estos registros?
 
 ## Considered Options
 
-- [Log4brains](https://github.com/thomvaill/log4brains): architecture knowledge base (command-line + static site generator)
-- [ADR Tools](https://github.com/npryce/adr-tools): command-line to create ADRs
-- [ADR Tools Python](https://bitbucket.org/tinkerer_/adr-tools-python/src/master/): command-line to create ADRs
-- [adr-viewer](https://github.com/mrwilson/adr-viewer): static site generator
-- [adr-log](https://adr.github.io/adr-log/): command-line to create a TOC of ADRs
+- [Log4brains](https://github.com/thomvaill/log4brains): base de conocimiento de arquitectura (línea de comandos + generador de sitio estático)
+- [ADR Tools](https://github.com/npryce/adr-tools): línea de comandos para crear ADRs
+- [ADR Tools Python](https://bitbucket.org/tinkerer_/adr-tools-python/src/master/): línea de comandos para crear ADRs
+- [adr-viewer](https://github.com/mrwilson/adr-viewer): generador de sitio estático
+- [adr-log](https://adr.github.io/adr-log/): línea de comandos para generar una tabla de contenidos de ADRs
 
 ## Decision Outcome
 
-Chosen option: "Log4brains", because it includes the features of all the other tools, and even more.
+Chosen option: "Log4brains", porque incluye las funcionalidades de todas las demás herramientas, y más.
