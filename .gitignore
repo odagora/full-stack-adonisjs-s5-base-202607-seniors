@@ -11,3 +11,5 @@ backend/*.sqlite3
 # Frontend
 frontend/.env
 frontend/dist
+
+.playwright
