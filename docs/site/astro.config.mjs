@@ -5,11 +5,10 @@ import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
 
 // https://astro.build/config
 export default defineConfig({
-	// `base` ya refleja la ruta prevista para GitHub Pages (coincide con
-	// project.name en .log4brains.yml). `site` (el dominio) sigue pendiente
-	// hasta que se defina el owner/repo final del deploy:
-	// site: 'https://<owner>.github.io',
-	base: '/',
+	// Deploy en GitHub Pages (project site, URL default): ver
+	// .github/workflows/deploy-docs.yml.
+	site: 'https://odagora.github.io',
+	base: '/full-stack-adonisjs-s5-base-202607-seniors',
 	integrations: [
 		starlight({
 			title: 'FlowSync Docs',
