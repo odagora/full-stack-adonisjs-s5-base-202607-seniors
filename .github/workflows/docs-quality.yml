@@ -83,6 +83,9 @@ jobs:
         run: |
           cp .env.example .env
           node ace generate:key
+          # tmp/ está gitignoreado y no existe en un checkout limpio; better-sqlite3
+          # necesita el directorio ya creado antes de abrir el archivo.
+          mkdir -p tmp
           npm run migration:run
 
       - name: Start backend
