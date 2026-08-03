@@ -211,10 +211,5 @@ paths:
           required: true
           schema:
             type: string
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
       security:
         - bearer: []
