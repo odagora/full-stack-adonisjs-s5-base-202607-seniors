@@ -1,0 +1,11 @@
+project:
+  name: flowsync
+  tz: America/Bogota
+  adrFolder: ./docs/adr
+  packages:
+    - name: frontend
+      path: ./frontend
+      adrFolder: ./frontend/docs/adr
+    - name: backend
+      path: ./backend
+      adrFolder: ./backend/docs/adr

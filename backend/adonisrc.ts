@@ -6,10 +6,7 @@ export default defineConfig({
     shutdownInReverseOrder: true,
   },
 
-  commands: [
-    () => import('@adonisjs/core/commands'),
-    () => import('@adonisjs/lucid/commands'),
-  ],
+  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands')],
 
   providers: [
     () => import('@adonisjs/core/providers/app_provider'),
@@ -22,6 +19,7 @@ export default defineConfig({
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
     () => import('@adonisjs/auth/auth_provider'),
+    () => import('@foadonis/openapi/openapi_provider'),
   ],
 
   preloads: [() => import('#start/routes'), () => import('#start/kernel')],

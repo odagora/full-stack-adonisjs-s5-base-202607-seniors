@@ -1,0 +1,220 @@
+info:
+  title: full-stack-adonisjs-master
+  version: 1.0.0
+  description: API del starter kit full-stack con autenticación por access tokens
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+        fullName: {}
+        email:
+          type: string
+        lastSeenAt: {}
+        createdAt:
+          type: string
+      required:
+        - id
+        - fullName
+        - email
+        - lastSeenAt
+        - createdAt
+openapi: 3.0.0
+paths:
+  /api:
+    get:
+      summary: Documentation UI
+      description: Displays the OpenAPI documentation UI.
+      tags:
+        - OpenAPI
+      responses:
+        default:
+          description: The documentation UI
+          content:
+            text/html:
+              schema:
+                type: string
+      parameters: []
+      security: []
+  /api.json:
+    get:
+      summary: JSON Documentation
+      description: Returns the OpenAPI documentation in JSON format.
+      tags:
+        - OpenAPI
+      responses:
+        default:
+          description: The documentation in JSON format
+          content:
+            application/json:
+              schema:
+                type: string
+      parameters: []
+      security: []
+  /api.yaml:
+    get:
+      summary: YAML Documentation
+      description: Returns the OpenAPI documentation in YAML format.
+      tags:
+        - OpenAPI
+      responses:
+        default:
+          description: The documentation in YAML format
+          content:
+            application/yaml:
+              schema:
+                type: string
+      parameters: []
+      security: []
+  /api/v1/health:
+    get:
+      summary: Liveness check
+      tags:
+        - Health
+      responses: {}
+      parameters: []
+      security: []
+  /api/v1/account/register:
+    post:
+      summary: Registrar una cuenta nueva
+      tags:
+        - NewAccounts
+      responses:
+        "201":
+          description: Cuenta creada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 180
+              required:
+                - email
+                - password
+              additionalProperties: false
+      parameters: []
+      security: []
+  /api/v1/account/login:
+    post:
+      summary: Login con email y password
+      tags:
+        - AccessTokens
+      responses:
+        "200":
+          description: Login correcto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+              additionalProperties: false
+      parameters: []
+      security: []
+  /api/v1/account/logout:
+    post:
+      summary: Revocar el access token actual
+      tags:
+        - AccessTokens
+      responses:
+        "200":
+          description: Token revocado
+          content:
+            application/json: {}
+      parameters: []
+      security:
+        - bearer: []
+  /api/v1/account/profile:
+    get:
+      summary: Usuario autenticado
+      tags:
+        - Profiles
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+      parameters: []
+      security:
+        - bearer: []
+  /api/v1/users:
+    get:
+      summary: Listar usuarios
+      tags:
+        - Users
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+      parameters: []
+      security:
+        - bearer: []
+  /api/v1/users/{id}:
+    get:
+      summary: Obtener un usuario por id
+      tags:
+        - Users
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearer: []

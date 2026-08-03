@@ -1,5 +1,6 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import openapi from '@foadonis/openapi/services/main'
 
 const NewAccountsController = () => import('#controllers/new_accounts_controller')
 const AccessTokensController = () => import('#controllers/access_tokens_controller')
@@ -10,6 +11,13 @@ const UsersController = () => import('#controllers/users_controller')
 router.get('/', async () => {
   return { app: 'full-stack-adonisjs-master', status: 'running' }
 })
+
+/*
+|--------------------------------------------------------------------------
+| API Docs (OpenAPI / Scalar)
+|--------------------------------------------------------------------------
+*/
+openapi.registerRoutes()
 
 /*
 |--------------------------------------------------------------------------
