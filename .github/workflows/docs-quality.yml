@@ -1,0 +1,244 @@
+name: Docs Quality
+
+# Verifica que la documentación esté al día y sin links rotos antes de
+# mergear a main. No genera ni commitea nada — solo falla el check si
+# detecta drift o links caídos, para que quien abre el PR corra los
+# scripts correspondientes y commitee el resultado.
+#
+# El cron semanal solo re-corre los jobs de links: es lo único que puede
+# romperse sin que nadie toque este repo (un sitio externo que cae). El
+# drift de contenido generado no aplica al cron — solo tiene sentido
+# comparado contra el diff de un PR puntual.
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'backend/docs/adr/**'
+      - 'frontend/docs/adr/**'
+      - 'backend/app/controllers/**'
+      - 'backend/app/validators/**'
+      - 'backend/app/models/**'
+      - 'backend/config/openapi.ts'
+      - 'scripts/**'
+      - '.github/workflows/docs-quality.yml'
+  schedule:
+    # Chequeo semanal de links (lunes 06:00 UTC) para detectar link rot.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adr-sync:
+    # Re-corre sync-adrs.sh y falla si el resultado difiere de lo commiteado
+    # (ADR nuevo/editado/borrado sin sincronizar a docs/site/).
+    # No aplica en el cron: solo tiene sentido comparado contra un PR.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Re-sync ADRs and check for drift
+        run: |
+          ./scripts/sync-adrs.sh
+          CHANGED="$(git status --porcelain -- docs/site/src/content/docs/adr/)"
+          if [ -n "$CHANGED" ]; then
+            echo "::error::Los ADRs sincronizados en docs/site/src/content/docs/adr/ están desactualizados. Corré ./scripts/sync-adrs.sh y commiteá el resultado."
+            echo "$CHANGED"
+            exit 1
+          fi
+
+  openapi-freshness:
+    # Levanta el backend real, regenera el snapshot con generate-openapi.sh
+    # y falla si difiere del openapi.yaml commiteado (contrato de la API
+    # cambió sin regenerar el snapshot).
+    # No aplica en el cron: solo tiene sentido comparado contra un PR.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Bootstrap backend env and database
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          node ace generate:key
+          # tmp/ está gitignoreado y no existe en un checkout limpio; better-sqlite3
+          # necesita el directorio ya creado antes de abrir el archivo.
+          mkdir -p tmp
+          npm run migration:run
+
+      - name: Start backend
+        working-directory: backend
+        run: |
+          node ace serve &
+          echo $! > /tmp/backend.pid
+
+      - name: Wait for backend
+        run: |
+          # Usa /api/v1/health para el chequeo de salud, no /api.yaml: pegarle
+          # más de una vez a /api.yaml en el mismo boot del backend le agrega
+          # parámetros duplicados a la spec (bug conocido de @foadonis/openapi).
+          # generate-openapi.sh debe ser la única llamada a /api.yaml del job.
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3333/api/v1/health -o /dev/null; then
+              echo "Backend listo."
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::El backend no respondió a tiempo en http://localhost:3333."
+          exit 1
+
+      - name: Regenerate OpenAPI snapshot and check for drift
+        run: |
+          ./scripts/generate-openapi.sh
+          CHANGED="$(git status --porcelain -- docs/site/openapi.yaml)"
+          if [ -n "$CHANGED" ]; then
+            echo "::error::docs/site/openapi.yaml está desactualizado respecto al backend real. Corré ./scripts/generate-openapi.sh (con el backend corriendo) y commiteá el resultado."
+            echo "$CHANGED"
+            exit 1
+          fi
+
+      - name: Stop backend
+        if: always()
+        run: kill "$(cat /tmp/backend.pid)" 2>/dev/null || true
+
+  check-links-source:
+    # Chequea únicamente links externos (http/https) en el markdown fuente.
+    # No valida links internos de Starlight: en el markdown crudo esos
+    # links todavía no tienen aplicado el `base` de Astro, así que no hay
+    # forma de juzgar si son correctos sin buildear primero (ver el job
+    # check-links-built, que sí cubre eso).
+    # Corre en PRs y también en el cron semanal (detecta link rot externo).
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check external links in source Markdown
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # --root-dir es necesario para que --scheme funcione con links
+          # locales (relativos o root-relative): sin él, lychee no puede
+          # convertirlos a una URL file:// y tira un error duro en vez de
+          # excluirlos por esquema. Con --root-dir, si pasan a file://,
+          # --scheme https/http los descarta como corresponde (no son
+          # responsabilidad de este job, ver check-links-built).
+          args: >-
+            --no-progress
+            --scheme https --scheme http
+            --root-dir .
+            --exclude-loopback
+            --exclude 'localhost'
+            --exclude 'example\.com'
+            --exclude 'adr\.github\.io/adr-log'
+            --exclude-path 'docs/adr/index.md'
+            --exclude-path 'docs/adr/README.md'
+            --exclude-path 'docs/adr/template.md'
+            --exclude-path 'node_modules'
+            docs/**/*.md
+            docs/**/*.mdx
+            backend/docs/adr/**/*.md
+            frontend/docs/adr/**/*.md
+            *.md
+          fail: true
+
+  check-links-built:
+    # Buildea el sitio real y lo sirve con `astro preview` (aplica el
+    # `base` configurado, igual que en producción), y chequea los links
+    # del HTML generado contra ese servidor. Esto es lo que detecta bugs
+    # de rutas/base rotas — un link con el base viejo hardcodeado compila
+    # perfecto pero no resuelve en el sitio real, y este job es el único
+    # que lo atrapa antes del deploy.
+    # Corre en PRs y también en el cron semanal (detecta link rot externo).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs/site
+        run: npm ci
+
+      - name: Build
+        working-directory: docs/site
+        run: npm run build
+
+      - name: Start preview server
+        working-directory: docs/site
+        run: |
+          npx astro preview --port 4321 &
+          echo $! > /tmp/preview.pid
+
+      - name: Wait for preview server
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4321/full-stack-adonisjs-s5-base-202607-seniors/ -o /dev/null; then
+              echo "Preview server listo."
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::El preview server no respondió a tiempo en http://localhost:4321."
+          exit 1
+
+      - name: Check links against the built site
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Los dos excludes de 20260802-... son links "Relates to" entre
+          # ADRs, relativos (../otro-slug/). Astro los deja tal cual en el
+          # HTML para que el navegador los resuelva — y lo hace bien (RFC
+          # 3986, verificado a mano con curl). lychee, al escanear el HTML
+          # local con rutas anidadas tipo /adr/slug/index.html, calcula mal
+          # la profundidad y sube un nivel de más. Falso positivo conocido
+          # de la herramienta, no un link roto real.
+          #
+          # docs/site/dist/404.html se excluye por completo: su propio link
+          # canónico apunta a su propia URL (.../404/), que por diseño no es
+          # una ruta real y siempre da 404. No es contenido a validar.
+          args: >-
+            --no-progress
+            --base-url http://localhost:4321/full-stack-adonisjs-s5-base-202607-seniors/
+            --exclude 'localhost:3333'
+            --exclude 'localhost:5173'
+            --exclude 'example\.com'
+            --exclude 'adr\.github\.io/adr-log'
+            --exclude 'localhost:4321/20260802-use-markdown-architectural-decision-records'
+            --exclude 'localhost:4321/20260802-use-sqlite-with-better-sqlite3-instead-of-postgresql'
+            --exclude 'localhost:4321/20260802-use-log4brains-to-manage-the-adrs'
+            --exclude-path 'docs/site/dist/404.html'
+            docs/site/dist/**/*.html
+          fail: true
+
+      - name: Stop preview server
+        if: always()
+        run: kill "$(cat /tmp/preview.pid)" 2>/dev/null || true

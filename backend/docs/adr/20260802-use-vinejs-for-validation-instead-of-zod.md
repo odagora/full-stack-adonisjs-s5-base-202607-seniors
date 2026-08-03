@@ -64,4 +64,4 @@ consultan la base de datos.
 
 ## Links
 
-- Relates to [Use SQLite with better-sqlite3 instead of PostgreSQL](20260802-use-sqlite-with-better-sqlite3-instead-of-postgresql.md)
+- Relates to [Use SQLite with better-sqlite3 instead of PostgreSQL](../20260802-use-sqlite-with-better-sqlite3-instead-of-postgresql/)
