@@ -211,5 +211,32 @@ paths:
           required: true
           schema:
             type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearer: []
+  /api/v1/users/active:
+    get:
+      summary: Listar usuarios activos (últimas 24h)
+      tags:
+        - Users
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+      parameters: []
       security:
         - bearer: []
