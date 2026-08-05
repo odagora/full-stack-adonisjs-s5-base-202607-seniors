@@ -190,7 +190,7 @@ jobs:
             backend/docs/adr/**/*.md
             frontend/docs/adr/**/*.md
             *.md
-            llms.txt
+            docs/site/public/llms.txt
           fail: true
 
   check-links-built:

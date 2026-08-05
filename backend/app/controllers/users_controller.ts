@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { UserTransformer } from '#transformers/user_transformer'
@@ -29,12 +30,20 @@ export default class UsersController {
     return response.ok({ user: UserTransformer.toJSON(user) })
   }
 
-  /*
-  |----------------------------------------------------------------------
-  | NOTA PARA EL FORMADOR:
-  | El endpoint GET /api/v1/users/active (usuarios vistos en las
-  | últimas 24h) se implementa EN VIVO durante la demo de la Sesión 3
-  | aplicando el flujo Explore-Plan-Execute. No lo pre-implementes aquí.
-  |----------------------------------------------------------------------
-  */
+  /**
+   * GET /api/v1/users/active
+   * Lista los usuarios vistos en las últimas 24h (last_seen_at). Requiere autenticación.
+   */
+  @ApiOperation({ summary: 'Listar usuarios activos (últimas 24h)' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: [User] })
+  async active({ response }: HttpContext) {
+    const since = DateTime.now().minus({ hours: 24 })
+
+    const users = await User.query()
+      .where('last_seen_at', '>=', since.toSQL()!)
+      .orderBy('last_seen_at', 'desc')
+
+    return response.ok({ users: UserTransformer.collection(users) })
+  }
 }
