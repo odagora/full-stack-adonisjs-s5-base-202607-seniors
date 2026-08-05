@@ -302,7 +302,7 @@ Two separate `lychee` jobs, deliberately covering different things:
 
 ### `llms.txt`
 
-Added `llms.txt` at the repo root, following the [llmstxt.org](https://llmstxt.org)
+Added `llms.txt` in `docs/site/public/`, following the [llmstxt.org](https://llmstxt.org)
 standard (H1 project name, a summary blockquote, and H2 sections of `[name](url):
 description` links) — a machine-readable entry point for LLMs/crawlers that
 points at the published docs site, the GitHub repo, and the README/PRD, plus a
@@ -310,11 +310,16 @@ plain-text summary of the stack and backend conventions. Written in English
 (the standard's usual convention, since it targets external agents/crawlers)
 even though the rest of the repo's docs are in Spanish.
 
-- Added `llms.txt` as an explicit input to `check-links-source`'s `lychee`
-  args: it's a `.txt` file, so none of that job's existing `*.md`/`**/*.md`
-  globs pick it up, and its links (GitHub repo, docs site, README/PRD blob
-  links) are exactly the kind of external/absolute links that job already
-  checks for everything else.
+- Vive en `docs/site/public/` (no en la raíz del repo) para que Astro lo
+  copie tal cual al build y quede servido en
+  `https://odagora.github.io/full-stack-adonisjs-s5-base-202607-seniors/llms.txt`.
+  El estándar asume el archivo servido en la raíz del dominio; con un
+  *project site* de GitHub Pages lo máximo posible es la raíz del `base`.
+- Added `docs/site/public/llms.txt` as an explicit input to
+  `check-links-source`'s `lychee` args: it's a `.txt` file, so none of that
+  job's existing `*.md`/`**/*.md` globs pick it up, and its links (GitHub
+  repo, docs site, README/PRD blob links) are exactly the kind of
+  external/absolute links that job already checks for everything else.
 - **Decision — no freshness/drift check against `CLAUDE.md`**: considered
   adding a CI job to detect when `llms.txt`'s stack/conventions summary goes
   stale relative to `CLAUDE.md`, mirroring `adr-sync`/`openapi-freshness`.
